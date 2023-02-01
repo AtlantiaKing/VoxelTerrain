@@ -15,7 +15,7 @@
     <ProjectGuid>{62BA78F9-CC88-465F-AEDF-B7557B1D0F13}</ProjectGuid>
     <RootNamespace>RayTracer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>DirectX</ProjectName>
+    <ProjectName>VoxelTerrain</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
