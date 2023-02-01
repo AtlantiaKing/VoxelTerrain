@@ -5,7 +5,7 @@
 
 namespace dae
 {
-	Face::Face(ID3D11Device* pDevice, const std::string& texturePath)
+	Face::Face(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const std::string& texturePath)
 	{
 		// Create Material
 		m_pMaterial = new Material{ pDevice, L"Resources/PosTex3D.fx" };
@@ -53,6 +53,20 @@ namespace dae
 		Texture* pTexture{ Texture::LoadFromFile(pDevice, texturePath) };
 		m_pMaterial->SetTexture(pTexture);
 		delete pTexture;
+
+		// Set primitive topology
+		pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+
+		// Set input layout
+		pDeviceContext->IASetInputLayout(m_pInputLayout);
+
+		// Set vertex buffer
+		constexpr UINT stride{ sizeof(Vertex) };
+		constexpr UINT offset{ 0 };
+		pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
+
+		// Set index buffer
+		pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 	}
 
 	Face::~Face()
@@ -68,20 +82,6 @@ namespace dae
 	void Face::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& worldMatrix, const Matrix& worldViewProjection) const
 	{
 		m_pMaterial->SetMatrices(worldMatrix, worldViewProjection);
-
-		// Set primitive topology
-		pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-
-		// Set input layout
-		pDeviceContext->IASetInputLayout(m_pInputLayout);
-
-		// Set vertex buffer
-		constexpr UINT stride{ sizeof(Vertex) };
-		constexpr UINT offset{ 0 };
-		pDeviceContext->IASetVertexBuffers(0, 1, &m_pVertexBuffer, &stride, &offset);
-
-		// Set index buffer
-		pDeviceContext->IASetIndexBuffer(m_pIndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
 		// Draw
 		D3DX11_TECHNIQUE_DESC techniqueDesc{};
