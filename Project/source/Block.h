@@ -1,5 +1,7 @@
 #pragma once
 #include "Matrix.h"
+#include "Vector3Int.h"
+#include <functional>
 
 namespace dae
 {
@@ -8,12 +10,13 @@ namespace dae
 	class Block final
 	{
 	public:
-		Block(const Vector3 position);
+		Block(const Vector3Int& position);
 
-		void Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewProjection, Face* pFace) const;
+		void Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(const Vector3Int&)> airPredicate, const Matrix& viewProjection, Face* pFace) const;
 	private:
 		Matrix m_TranslationMatrix{ Vector3::UnitX, Vector3::UnitY, Vector3::UnitZ, Vector3::Zero };
 		Matrix m_FaceTransformations[6]{};
+		Vector3Int m_NeighbouringBlocks[6]{};
 	};
 }
 

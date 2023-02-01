@@ -54,6 +54,12 @@
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Face.h" />
+    <ClInclude Include="Vector2Int.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3Int.h">
+      <Filter>Math</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -85,5 +91,11 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Face.cpp" />
+    <ClCompile Include="Vector2Int.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3Int.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

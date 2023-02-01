@@ -4,6 +4,7 @@ namespace dae
 {
 	struct Vector2;
 	struct Vector4;
+	struct Vector3Int;
 	struct Vector3
 	{
 		float x{};
@@ -14,6 +15,7 @@ namespace dae
 		Vector3(float _x, float _y, float _z);
 		Vector3(const Vector3& from, const Vector3& to);
 		Vector3(const Vector4& v);
+		Vector3(const Vector3Int& v);
 
 		float Magnitude() const;
 		float SqrMagnitude() const;

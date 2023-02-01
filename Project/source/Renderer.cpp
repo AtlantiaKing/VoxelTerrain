@@ -3,6 +3,7 @@
 #include "Camera.h"
 #include "Face.h"
 #include "Block.h"
+#include "Vector3Int.h"
 
 namespace dae {
 
@@ -30,14 +31,19 @@ namespace dae {
 
 		m_pFace = new Face{ m_pDevice, "Resources/Block.png" };
 
-		constexpr int mapSize{ 5 };
-		for (int x{}; x < mapSize; ++x)
+		for (int x{}; x < m_MapSize; ++x)
 		{
-			for (int z{}; z < mapSize; ++z)
+			for (int z{}; z < m_MapSize; ++z)
 			{
-				m_pBlocks.push_back(new Block{ { static_cast<float>(x), 0.0f, static_cast<float>(z) } });
+				m_pBlocks[x + z * m_MapSize] = new Block{ { x, 0, z } };
 			}
 		}
+
+		m_IsBlockPredicate = [&](const Vector3Int& position) -> bool
+		{
+			if (position.x < 0 || position.z < 0 || position.x > m_MapSize - 1 || position.z > m_MapSize - 1 || position.y > 0 || position.y < 0) return false;
+			return m_pBlocks[position.x + position.z * m_MapSize];
+		};
 	}
 
 	Renderer::~Renderer()
@@ -84,10 +90,12 @@ namespace dae {
 		m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, &clearColor.r);
 		m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+		const Matrix viewProjection{ m_pCamera->GetViewMatrix() * m_pCamera->GetProjectionMatrix() };
+
 		// Set pipeline + Invoke drawcalls (= render)
 		for (Block* pBlock : m_pBlocks)
 		{
-			pBlock->Render(m_pDeviceContext, m_pCamera->GetViewMatrix() * m_pCamera->GetProjectionMatrix(), m_pFace);
+			pBlock->Render(m_pDeviceContext, m_IsBlockPredicate, viewProjection, m_pFace);
 		}
 
 		// Present backbuffer (swap)

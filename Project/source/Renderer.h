@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 struct SDL_Window;
 struct SDL_Surface;
 
@@ -33,7 +35,10 @@ namespace dae
 
 		Camera* m_pCamera{};
 		Face* m_pFace{};
-		std::vector<Block*> m_pBlocks{};
+
+		const static int m_MapSize{ 16 };
+		Block* m_pBlocks[m_MapSize * m_MapSize]{};
+		std::function<bool(const Vector3Int& position)> m_IsBlockPredicate{};
 
 		//DIRECTX
 		ID3D11SamplerState* m_pSampleState{};

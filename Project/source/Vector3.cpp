@@ -6,6 +6,7 @@
 
 #include "Vector4.h"
 #include "Vector2.h"
+#include "Vector3Int.h"
 
 namespace dae {
 	const Vector3 Vector3::UnitX = Vector3{ 1, 0, 0 };
@@ -16,6 +17,8 @@ namespace dae {
 	Vector3::Vector3(float _x, float _y, float _z) : x(_x), y(_y), z(_z){}
 
 	Vector3::Vector3(const Vector4& v) : x(v.x), y(v.y), z(v.z){}
+
+	Vector3::Vector3(const Vector3Int& v) : x(static_cast<float>(v.x)), y(static_cast<float>(v.y)), z(static_cast<float>(v.z)) {}
 
 	Vector3::Vector3(const Vector3& from, const Vector3& to) : x(to.x - from.x), y(to.y - from.y), z(to.z - from.z){}
 

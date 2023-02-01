@@ -2,7 +2,7 @@
 #include "Block.h"
 #include "Face.h"
 
-dae::Block::Block(const Vector3 position)
+dae::Block::Block(const Vector3Int& position)
 	: m_TranslationMatrix{ Matrix::CreateTranslation(position) }
 {
 	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
@@ -12,43 +12,51 @@ dae::Block::Block(const Vector3 position)
 		case Face::FaceDirection::FORWARD:
 		{
 			m_FaceTransformations[i] = Matrix::CreateTranslation({ 0.0f, 0.0f, -0.5f });
-			break;
-		}
-		case Face::FaceDirection::RIGHT:
-		{
-			m_FaceTransformations[i] = Matrix::CreateRotationY(90.0f * TO_RADIANS) * Matrix::CreateTranslation({ -0.5f, 0.0f, 0.0f });
-			break;
-		}
-		case Face::FaceDirection::LEFT:
-		{
-			m_FaceTransformations[i] = Matrix::CreateRotationY(-90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.5f, 0.0f, 0.0f });
+			m_NeighbouringBlocks[i] = position - Vector3Int::UnitZ;
 			break;
 		}
 		case Face::FaceDirection::BACK:
 		{
 			m_FaceTransformations[i] = Matrix::CreateRotationY(180.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, 0.0f, 0.5f });
+			m_NeighbouringBlocks[i] = position + Vector3Int::UnitZ;
+			break;
+		}
+		case Face::FaceDirection::RIGHT:
+		{
+			m_FaceTransformations[i] = Matrix::CreateRotationY(90.0f * TO_RADIANS) * Matrix::CreateTranslation({ -0.5f, 0.0f, 0.0f });
+			m_NeighbouringBlocks[i] = position - Vector3Int::UnitX;
+			break;
+		}
+		case Face::FaceDirection::LEFT:
+		{
+			m_FaceTransformations[i] = Matrix::CreateRotationY(-90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.5f, 0.0f, 0.0f });
+			m_NeighbouringBlocks[i] = position + Vector3Int::UnitX;
 			break;
 		}
 		case Face::FaceDirection::UP:
 		{
 			m_FaceTransformations[i] = Matrix::CreateRotationX(-90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, 0.5f, 0.0f });
+			m_NeighbouringBlocks[i] = position + Vector3Int::UnitY;
 			break;
 		}
 		case Face::FaceDirection::BOTTOM:
 		{
 			m_FaceTransformations[i] = Matrix::CreateRotationX(90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, -0.5f, 0.0f });
+			m_NeighbouringBlocks[i] = position - Vector3Int::UnitY;
 			break;
 		}
 		}
 	}
 }
 
-void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewProjection, Face* pFace) const
+void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(const Vector3Int&)> isBlockPredicate, const Matrix& viewProjection, Face* pFace) const
 {
 	const Matrix worldViewProjection{ m_TranslationMatrix * viewProjection };
 
 	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
 	{
+		if (isBlockPredicate(m_NeighbouringBlocks[i])) continue;
+
 		const Matrix& faceTransformation{ m_FaceTransformations[i] };
 
 		pFace->Render(pDeviceContext, faceTransformation * m_TranslationMatrix, faceTransformation * worldViewProjection);
