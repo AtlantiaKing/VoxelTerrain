@@ -9,7 +9,7 @@ namespace dae
 {
 	class Camera;
 	class Face;
-	class Block;
+	class World;
 
 	class Renderer final
 	{
@@ -33,13 +33,9 @@ namespace dae
 
 		bool m_IsInitialized{ false };
 
+		World* m_pWorld{};
 		Camera* m_pCamera{};
 		Face* m_pFace{};
-
-		const static int m_MapSize{ 64 };
-		const static int m_MapHeight{ 256 };
-		Block* m_pBlocks[m_MapSize * m_MapSize * m_MapHeight]{};
-		std::function<bool(const Vector3Int& position)> m_IsBlockPredicate{};
 
 		//DIRECTX
 		ID3D11SamplerState* m_pSampleState{};

@@ -2,7 +2,7 @@
 #include "Renderer.h"
 #include "Camera.h"
 #include "Face.h"
-#include "Block.h"
+#include "World.h"
 #include "Vector3Int.h"
 
 namespace dae {
@@ -31,33 +31,11 @@ namespace dae {
 
 		m_pFace = new Face{ m_pDevice, m_pDeviceContext, "Resources/Block.png" };
 
-		const int worldLevel{ 16 };
-		for (int x{}; x < m_MapSize; ++x)
-		{
-			for (int z{}; z < m_MapSize; ++z)
-			{
-				for (int y{}; y < worldLevel; ++y)
-				{
-					m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = new Block{ { x, y, z } };
-				}
-			}
-		}
-
-		m_IsBlockPredicate = [&](const Vector3Int& position) -> bool
-		{
-			return position.x >= 0 && position.z >= 0 && 
-				position.x < m_MapSize&& position.z < m_MapSize &&
-				position.y < m_MapHeight&& position.y >= 0 && 
-				m_pBlocks[position.x + position.z * m_MapSize + position.y * m_MapSize * m_MapSize];
-		};
+		m_pWorld = new World{};
 	}
 
 	Renderer::~Renderer()
 	{
-		for (Block* pBlock : m_pBlocks)
-		{
-			delete pBlock;
-		}
 		delete m_pFace;
 		delete m_pCamera;
 
@@ -96,31 +74,8 @@ namespace dae {
 		m_pDeviceContext->ClearRenderTargetView(m_pRenderTargetView, &clearColor.r);
 		m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
-		const Matrix viewProjection{ m_pCamera->GetViewMatrix() * m_pCamera->GetProjectionMatrix() };
-
 		// Set pipeline + Invoke drawcalls (= render)
-		for (int x{}; x < m_MapSize; ++x)
-		{
-			for (int z{}; z < m_MapSize; ++z)
-			{
-				for (int y{}; y < m_MapHeight; ++y)
-				{
-
-					Block* pBlock{ m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] };
-
-					if (!pBlock) continue;
-
-					const Vector3Int position{ x, y, z };
-
-					if (m_IsBlockPredicate(position + Vector3Int::UnitX) && m_IsBlockPredicate(position - Vector3Int::UnitX) &&
-						m_IsBlockPredicate(position + Vector3Int::UnitY) && m_IsBlockPredicate(position - Vector3Int::UnitY) &&
-						m_IsBlockPredicate(position + Vector3Int::UnitZ) && m_IsBlockPredicate(position - Vector3Int::UnitZ))
-						continue;
-
-					pBlock->Render(m_pDeviceContext, m_IsBlockPredicate, viewProjection, m_pFace);
-				}
-			}
-		}
+		m_pWorld->Render(m_pDeviceContext, m_pCamera->GetViewMatrix() * m_pCamera->GetProjectionMatrix(), m_pFace);
 
 		// Present backbuffer (swap)
 		m_pSwapChain->Present(0, 0);

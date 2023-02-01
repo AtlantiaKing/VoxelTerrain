@@ -60,6 +60,7 @@
     <ClInclude Include="Vector3Int.h">
       <Filter>Math</Filter>
     </ClInclude>
+    <ClInclude Include="World.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -95,6 +96,9 @@
       <Filter>Math</Filter>
     </ClCompile>
     <ClCompile Include="Vector3Int.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="World.cpp">
       <Filter>Math</Filter>
     </ClCompile>
   </ItemGroup>
