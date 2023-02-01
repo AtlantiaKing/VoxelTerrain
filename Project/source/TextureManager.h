@@ -15,7 +15,8 @@ namespace dae
 		enum class TextureType : BYTE
 		{
 			DIRT,
-			WATER
+			WATER,
+			GRASS
 		};
 
 		~TextureManager();

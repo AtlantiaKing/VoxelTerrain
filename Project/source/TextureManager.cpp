@@ -8,6 +8,7 @@ dae::TextureManager::TextureManager(ID3D11Device* pDevice)
 {
 	m_pTextures[TextureType::DIRT] = Texture::LoadFromFile(pDevice, "Resources/Dirt.png");
 	m_pTextures[TextureType::WATER] = Texture::LoadFromFile(pDevice, "Resources/Water.png");
+	m_pTextures[TextureType::GRASS] = Texture::LoadFromFile(pDevice, "Resources/Grass.png");
 }
 
 dae::TextureManager* dae::TextureManager::GetInstance()

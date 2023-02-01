@@ -3,6 +3,7 @@
 #include "Vector3Int.h"
 #include "Block.h"
 #include "TextureManager.h"
+#include "Utils.h"
 
 dae::World::World()
 {
@@ -10,13 +11,37 @@ dae::World::World()
 	{
 		for (int z{}; z < m_MapSize; ++z)
 		{
-			const int worldLevel{ static_cast<int>(sin(static_cast<float>(x / 3)) * 15 + 25) };
+			float worldLevel{};
+			float maxValue{};
+			for (int i{ 1 }; i <= m_NrOctaves; ++i)
+			{
+				maxValue += 1.0f / i;
+				worldLevel += Utils::PerlinFunction(static_cast<float>(x) / m_MapSize, static_cast<float>(z) / m_MapSize, i, m_MapZoom, m_MapOffset) / i;
+			}
+			worldLevel /= (maxValue / 2.0f);
+			worldLevel /= 2.0f;
+			worldLevel += 0.5f;
+			worldLevel *= m_MapHeight;
+
 			constexpr int seaLevel{ 30 };
 			for (int y{ 0 }; y < m_MapHeight; ++y)
 			{
 				if (y > worldLevel && y > seaLevel) continue;
 
-				Texture* pTexture{ y <= worldLevel ? TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::DIRT) : TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::WATER) };
+				Texture* pTexture{};
+
+				if (y == static_cast<int>(worldLevel))
+				{
+					pTexture = TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::GRASS);
+				}
+				else if (y > worldLevel)
+				{
+					pTexture = TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::WATER);
+				}
+				else
+				{
+					pTexture = TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::DIRT);
+				}
 
 				m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = new Block{ { x, y, z }, pTexture };
 			}
