@@ -45,8 +45,10 @@ namespace dae {
 
 		m_IsBlockPredicate = [&](const Vector3Int& position) -> bool
 		{
-			if (position.x < 0 || position.z < 0 || position.x > m_MapSize - 1 || position.z > m_MapSize - 1 || position.y > m_MapHeight - 1 || position.y < 0) return false;
-			return m_pBlocks[position.x + position.z * m_MapSize + position.y * m_MapSize * m_MapSize];
+			return position.x >= 0 && position.z >= 0 && 
+				position.x < m_MapSize&& position.z < m_MapSize &&
+				position.y < m_MapHeight&& position.y >= 0 && 
+				m_pBlocks[position.x + position.z * m_MapSize + position.y * m_MapSize * m_MapSize];
 		};
 	}
 
@@ -103,9 +105,17 @@ namespace dae {
 			{
 				for (int y{}; y < m_MapHeight; ++y)
 				{
+
 					Block* pBlock{ m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] };
 
 					if (!pBlock) continue;
+
+					const Vector3Int position{ x, y, z };
+
+					if (m_IsBlockPredicate(position + Vector3Int::UnitX) && m_IsBlockPredicate(position - Vector3Int::UnitX) &&
+						m_IsBlockPredicate(position + Vector3Int::UnitY) && m_IsBlockPredicate(position - Vector3Int::UnitY) &&
+						m_IsBlockPredicate(position + Vector3Int::UnitZ) && m_IsBlockPredicate(position - Vector3Int::UnitZ))
+						continue;
 
 					pBlock->Render(m_pDeviceContext, m_IsBlockPredicate, viewProjection, m_pFace);
 				}
