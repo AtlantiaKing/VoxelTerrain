@@ -31,18 +31,22 @@ namespace dae {
 
 		m_pFace = new Face{ m_pDevice, "Resources/Block.png" };
 
+		const int worldLevel{ m_MapHeight };
 		for (int x{}; x < m_MapSize; ++x)
 		{
 			for (int z{}; z < m_MapSize; ++z)
 			{
-				m_pBlocks[x + z * m_MapSize] = new Block{ { x, 0, z } };
+				for (int y{}; y < worldLevel; ++y)
+				{
+					m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = new Block{ { x, y, z } };
+				}
 			}
 		}
 
 		m_IsBlockPredicate = [&](const Vector3Int& position) -> bool
 		{
-			if (position.x < 0 || position.z < 0 || position.x > m_MapSize - 1 || position.z > m_MapSize - 1 || position.y > 0 || position.y < 0) return false;
-			return m_pBlocks[position.x + position.z * m_MapSize];
+			if (position.x < 0 || position.z < 0 || position.x > m_MapSize - 1 || position.z > m_MapSize - 1 || position.y > m_MapHeight - 1 || position.y < 0) return false;
+			return m_pBlocks[position.x + position.z * m_MapSize + position.y * m_MapSize * m_MapSize];
 		};
 	}
 
@@ -93,9 +97,19 @@ namespace dae {
 		const Matrix viewProjection{ m_pCamera->GetViewMatrix() * m_pCamera->GetProjectionMatrix() };
 
 		// Set pipeline + Invoke drawcalls (= render)
-		for (Block* pBlock : m_pBlocks)
+		for (int x{}; x < m_MapSize; ++x)
 		{
-			pBlock->Render(m_pDeviceContext, m_IsBlockPredicate, viewProjection, m_pFace);
+			for (int z{}; z < m_MapSize; ++z)
+			{
+				for (int y{}; y < m_MapHeight; ++y)
+				{
+					Block* pBlock{ m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] };
+
+					if (!pBlock) continue;
+
+					pBlock->Render(m_pDeviceContext, m_IsBlockPredicate, viewProjection, m_pFace);
+				}
+			}
 		}
 
 		// Present backbuffer (swap)
