@@ -61,8 +61,8 @@ namespace dae
 		const float fovChangeSpeed{ 50.0f };
 		const float minFov{ 30.0f };
 		const float maxFov{ 170.0f };
-		const float mouseMovementSpeed{ 2.0f };
-		const float angularSpeed{ 360 * TO_RADIANS };
+		const float mouseMovementSpeed{ 0.05f };
+		const float angularSpeed{ 0.5f * TO_RADIANS };
 
 		// The total movement of this frame
 		Vector3 direction{};
@@ -77,15 +77,15 @@ namespace dae
 		switch (mouseState)
 		{
 		case SDL_BUTTON_LMASK: // LEFT CLICK
-			direction -= m_Forward * (mouseY * mouseMovementSpeed * deltaTime);
-			m_TotalYaw += mouseX * angularSpeed * deltaTime;
+			direction -= m_Forward * (mouseY * mouseMovementSpeed);
+			m_TotalYaw += mouseX * angularSpeed;
 			break;
 		case SDL_BUTTON_RMASK: // RIGHT CLICK
-			m_TotalYaw += mouseX * angularSpeed * deltaTime;
-			m_TotalPitch -= mouseY * angularSpeed * deltaTime;
+			m_TotalYaw += mouseX * angularSpeed;
+			m_TotalPitch -= mouseY * angularSpeed;
 			break;
 		case SDL_BUTTON_X2: // BOTH CLICK
-			direction.y -= mouseY * mouseMovementSpeed * deltaTime;
+			direction.y -= mouseY * mouseMovementSpeed;
 			break;
 		}
 		m_TotalPitch = std::clamp(m_TotalPitch, -89.0f * TO_RADIANS, 89.0f * TO_RADIANS);

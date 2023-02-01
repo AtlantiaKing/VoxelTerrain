@@ -3,13 +3,6 @@
 #include "Vector4.h"
 
 namespace dae {
-	enum class MatrixType
-	{
-		WorldViewProjection,
-		World,
-		InverseView
-	};
-
 	struct Matrix
 	{
 		Matrix() = default;

@@ -7,6 +7,7 @@ float3 gLightDirection = normalize(float3(0.577f, -0.577f, 0.577f));
 float4 gAmbientColor = float4(0.025f, 0.025f, 0.025f, 1.0f);
 
 float4x4 gWorldViewProj : WorldViewProjection;
+float4x4 gWorld : WorldMatrix;
 
 Texture2D gDiffuseMap : DiffuseMap;
 
@@ -42,7 +43,6 @@ VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
 	output.Position = mul(float4(input.Position, 1.0f), gWorldViewProj);
-	output.WorldPosition = mul(float4(input.Position, 1.0f), gWorld);
 	output.Normal = mul(normalize(input.Normal), (float3x3)gWorld);
 	output.UV = input.UV;
 	return output;
@@ -61,7 +61,7 @@ float4 CalculateLambert(float4 cd)
 //------------------------------------------------
 float4 PS(VS_OUTPUT input) : SV_TARGET
 {
-	float observedArea = saturate(dot(input.Normal, -gLightDirection));
+	float observedArea = dot(input.Normal, -gLightDirection) / 2.0f + 0.5f;
 	float4 lambert = CalculateLambert(gDiffuseMap.Sample(gSamState, input.UV));
 
 	return gLightIntensity * lambert * observedArea + gAmbientColor;

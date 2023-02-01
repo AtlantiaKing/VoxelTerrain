@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Material.h"
+#include "Texture.h"
 
 namespace dae
 {
@@ -14,9 +15,17 @@ namespace dae
 		m_pMatWorldViewProjVariable = m_pEffect->GetVariableByName("gWorldViewProj")->AsMatrix();
 		if (!m_pMatWorldViewProjVariable->IsValid()) std::wcout << L"m_pMatWorldViewProjVariable not valid\n";
 
+		// Save the worldviewprojection variable of the effect as a member variable
+		m_pMatWorldVariable = m_pEffect->GetVariableByName("gWorld")->AsMatrix();
+		if (!m_pMatWorldVariable->IsValid()) std::wcout << L"m_pMatWorldVariable not valid\n";
+
 		// Save the samplestate variable of the effect as a member variable
 		m_pSamplerStateVariable = m_pEffect->GetVariableByName("gSamState")->AsSampler();
 		if (!m_pSamplerStateVariable->IsValid()) std::wcout << L"m_pSamplerStateVariable not valid\n";
+
+		// Save the samplestate variable of the effect as a member variable
+		m_pDiffuseMapVariable = m_pEffect->GetVariableByName("gDiffuseMap")->AsShaderResource();
+		if (!m_pDiffuseMapVariable->IsValid()) std::wcout << L"m_pDiffuseMapVariable not valid\n";
 	}
 
 	Material::~Material()
@@ -24,9 +33,15 @@ namespace dae
 		if (m_pEffect) m_pEffect->Release();
 	}
 
-	void Material::SetMatrix(const Matrix& matrix)
+	void Material::SetMatrices(const Matrix& worldMatrix, const Matrix& worldViewProjection)
 	{
-		m_pMatWorldViewProjVariable->SetMatrix(reinterpret_cast<const float*>(&matrix));
+		m_pMatWorldViewProjVariable->SetMatrix(reinterpret_cast<const float*>(&worldViewProjection));
+		m_pMatWorldVariable->SetMatrix(reinterpret_cast<const float*>(&worldMatrix));
+	}
+
+	void Material::SetTexture(Texture* pTexture)
+	{
+		m_pDiffuseMapVariable->SetResource(pTexture->GetSRV());
 	}
 
 	ID3DX11Effect* Material::GetEffect() const
@@ -42,7 +57,7 @@ namespace dae
 	ID3D11InputLayout* Material::LoadInputLayout(ID3D11Device* pDevice)
 	{
 		// Create vertex layout
-		static constexpr uint32_t numElements{ 4 };
+		static constexpr uint32_t numElements{ 3 };
 		D3D11_INPUT_ELEMENT_DESC vertexDesc[numElements]{};
 
 		vertexDesc[0].SemanticName = "POSITION";
@@ -50,20 +65,15 @@ namespace dae
 		vertexDesc[0].AlignedByteOffset = 0;
 		vertexDesc[0].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-		vertexDesc[2].SemanticName = "NORMAL";
-		vertexDesc[2].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		vertexDesc[2].AlignedByteOffset = 12;
-		vertexDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
-
-		vertexDesc[1].SemanticName = "TANGENT";
+		vertexDesc[1].SemanticName = "NORMAL";
 		vertexDesc[1].Format = DXGI_FORMAT_R32G32B32_FLOAT;
-		vertexDesc[1].AlignedByteOffset = 24;
+		vertexDesc[1].AlignedByteOffset = 12;
 		vertexDesc[1].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
-		vertexDesc[3].SemanticName = "TEXCOORD";
-		vertexDesc[3].Format = DXGI_FORMAT_R32G32_FLOAT;
-		vertexDesc[3].AlignedByteOffset = 36;
-		vertexDesc[3].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
+		vertexDesc[2].SemanticName = "TEXCOORD";
+		vertexDesc[2].Format = DXGI_FORMAT_R32G32_FLOAT;
+		vertexDesc[2].AlignedByteOffset = 24;
+		vertexDesc[2].InputSlotClass = D3D11_INPUT_PER_VERTEX_DATA;
 
 		// Create input layout
 		D3DX11_PASS_DESC passDesc{};

@@ -52,6 +52,8 @@
     </ClInclude>
     <ClInclude Include="Renderer.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="Block.h" />
+    <ClInclude Include="Face.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -81,5 +83,7 @@
       <Filter>DataTypes</Filter>
     </ClCompile>
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="Block.cpp" />
+    <ClCompile Include="Face.cpp" />
   </ItemGroup>
 </Project>

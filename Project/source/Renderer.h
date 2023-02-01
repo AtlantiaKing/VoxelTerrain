@@ -6,6 +6,8 @@ struct SDL_Surface;
 namespace dae
 {
 	class Camera;
+	class Face;
+	class Block;
 
 	class Renderer final
 	{
@@ -30,6 +32,8 @@ namespace dae
 		bool m_IsInitialized{ false };
 
 		Camera* m_pCamera{};
+		Face* m_pFace{};
+		Block* m_pBlock{};
 
 		//DIRECTX
 		ID3D11SamplerState* m_pSampleState{};

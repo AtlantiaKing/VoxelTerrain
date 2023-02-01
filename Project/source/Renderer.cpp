@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Renderer.h"
 #include "Camera.h"
+#include "Face.h"
+#include "Block.h"
 
 namespace dae {
 
@@ -25,10 +27,16 @@ namespace dae {
 		// Create and initialize the camera
 		m_pCamera = new Camera{};
 		m_pCamera->Initialize(45.0f, { 0.0f, 0.0f, -50.0f }, static_cast<float>(m_Width) / m_Height);
+
+		m_pFace = new Face{ m_pDevice, "Resources/Block.png" };
+
+		m_pBlock = new Block{ { 0.0f, 0.0f, 0.0f } };
 	}
 
 	Renderer::~Renderer()
 	{
+		delete m_pBlock;
+		delete m_pFace;
 		delete m_pCamera;
 
 		if (m_pSampleState) m_pSampleState->Release();
@@ -67,6 +75,7 @@ namespace dae {
 		m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		// Set pipeline + Invoke drawcalls (= render)
+		m_pBlock->Render(m_pDeviceContext, m_pCamera->GetViewMatrix() * m_pCamera->GetProjectionMatrix(), m_pFace);
 
 		// Present backbuffer (swap)
 		m_pSwapChain->Present(0, 0);
