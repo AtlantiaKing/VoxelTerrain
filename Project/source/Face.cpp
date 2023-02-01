@@ -49,11 +49,6 @@ namespace dae
 		result = pDevice->CreateBuffer(&bd, &initData, &m_pIndexBuffer);
 		if (FAILED(result)) return;
 
-		// Create texture
-		Texture* pTexture{ Texture::LoadFromFile(pDevice, texturePath) };
-		m_pMaterial->SetTexture(pTexture);
-		delete pTexture;
-
 		// Set primitive topology
 		pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
@@ -77,6 +72,11 @@ namespace dae
 		if (m_pInputLayout) m_pInputLayout->Release();
 
 		delete m_pMaterial;
+	}
+
+	void Face::SetTexture(Texture* pTexture)
+	{
+		m_pMaterial->SetTexture(pTexture);
 	}
 
 	void Face::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& worldMatrix, const Matrix& worldViewProjection) const

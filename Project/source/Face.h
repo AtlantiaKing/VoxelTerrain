@@ -26,6 +26,8 @@ namespace dae
 		Face(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const std::string& texturePath);
 		~Face();
 
+		void SetTexture(Texture* pTexture);
+
 		void Render(ID3D11DeviceContext* pDeviceContext, const Matrix& worldMatrix, const Matrix& worldViewProjection) const;
 	private:
 		Material* m_pMaterial{};

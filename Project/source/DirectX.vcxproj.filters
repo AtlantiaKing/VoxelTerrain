@@ -61,6 +61,7 @@
       <Filter>Math</Filter>
     </ClInclude>
     <ClInclude Include="World.h" />
+    <ClInclude Include="TextureManager.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -98,8 +99,7 @@
     <ClCompile Include="Vector3Int.cpp">
       <Filter>Math</Filter>
     </ClCompile>
-    <ClCompile Include="World.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
+    <ClCompile Include="TextureManager.cpp" />
+    <ClCompile Include="World.cpp" />
   </ItemGroup>
 </Project>

@@ -4,6 +4,7 @@
 #include "Face.h"
 #include "World.h"
 #include "Vector3Int.h"
+#include "TextureManager.h"
 
 namespace dae {
 
@@ -25,6 +26,8 @@ namespace dae {
 			std::cout << "DirectX initialization failed!\n";
 		}
 
+		TextureManager::CreateInstance(m_pDevice);
+
 		// Create and initialize the camera
 		m_pCamera = new Camera{};
 		m_pCamera->Initialize(90.0f, { 0.0f, 0.0f, -50.0f }, static_cast<float>(m_Width) / m_Height);
@@ -36,6 +39,8 @@ namespace dae {
 
 	Renderer::~Renderer()
 	{
+		delete TextureManager::GetInstance();
+
 		delete m_pWorld;
 		delete m_pFace;
 		delete m_pCamera;

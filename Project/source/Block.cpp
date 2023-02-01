@@ -5,8 +5,9 @@
 bool dae::Block::m_Initialized{};
 dae::Vector3Int dae::Block::m_NeighbouringBlocks[6]{};
 
-dae::Block::Block(const Vector3Int& position)
+dae::Block::Block(const Vector3Int& position, Texture* pTexture)
 	: m_TranslationMatrix{ Matrix::CreateTranslation(position) }
+	, m_pTexture{ pTexture }
 {
 	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
 	{
@@ -56,6 +57,8 @@ dae::Block::Block(const Vector3Int& position)
 
 void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(const Vector3Int&)> isBlockPredicate, const Matrix& viewProjection, Face* pFace) const
 {
+	pFace->SetTexture(m_pTexture);
+
 	const Vector3Int position{ m_TranslationMatrix.GetTranslation() };
 
 	Vector4 projectedPosition{ (m_TranslationMatrix * viewProjection).TransformPoint(Vector4{ 0.0f, 0.0f, 0.0f, 1.0f }) };
