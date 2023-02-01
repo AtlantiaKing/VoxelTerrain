@@ -18,7 +18,9 @@ namespace dae
 			DIRT,
 			WATER,
 			GRASS,
-			SNOW
+			SNOW,
+			WOOD,
+			LEAVES
 		};
 
 		~TextureManager();

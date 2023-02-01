@@ -6,6 +6,7 @@ namespace dae
 {
 	class Block;
 	class Face;
+	struct Vector2Int;
 
 	class World final
 	{
@@ -28,6 +29,9 @@ namespace dae
 		const int m_NrOctaves{ 5 };
 		const float m_MapZoom{ 1.0f };
 		const float m_MapOffset{ 493.0f };
+
+		bool HasTree(const Vector2Int& position);
+		void CreateTree(const Vector3Int& position);
 	};
 }
 
