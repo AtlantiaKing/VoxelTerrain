@@ -13,7 +13,7 @@ Texture2D gDiffuseMap : DiffuseMap;
 
 SamplerState gSamState : SampleState
 {
-	Filter = MIN_MAG_MIP_LINEAR;
+	Filter = ANISOTROPIC;
 	AddressU = Wrap; // or Mirror, Clamp, Border
 	AddressV = Wrap; // or Mirror, Clamp, Border
 };
