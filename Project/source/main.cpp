@@ -24,8 +24,8 @@ int main(int argc, char* args[])
 	//Create window + surfaces
 	SDL_Init(SDL_INIT_VIDEO);
 
-	const uint32_t width = 640;
-	const uint32_t height = 480;
+	const uint32_t width = 1280;
+	const uint32_t height = 720;
 
 	SDL_Window* pWindow = SDL_CreateWindow(
 		"VoxelTerrain - De Keukelaere Sander",

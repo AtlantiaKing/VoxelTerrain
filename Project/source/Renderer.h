@@ -36,7 +36,7 @@ namespace dae
 		Camera* m_pCamera{};
 		Face* m_pFace{};
 
-		const static int m_MapSize{ 16 };
+		const static int m_MapSize{ 64 };
 		const static int m_MapHeight{ 256 };
 		Block* m_pBlocks[m_MapSize * m_MapSize * m_MapHeight]{};
 		std::function<bool(const Vector3Int& position)> m_IsBlockPredicate{};

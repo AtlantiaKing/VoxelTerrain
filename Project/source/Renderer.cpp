@@ -27,11 +27,11 @@ namespace dae {
 
 		// Create and initialize the camera
 		m_pCamera = new Camera{};
-		m_pCamera->Initialize(45.0f, { 0.0f, 0.0f, -50.0f }, static_cast<float>(m_Width) / m_Height);
+		m_pCamera->Initialize(90.0f, { 0.0f, 0.0f, -50.0f }, static_cast<float>(m_Width) / m_Height);
 
-		m_pFace = new Face{ m_pDevice, "Resources/Block.png" };
+		m_pFace = new Face{ m_pDevice, m_pDeviceContext, "Resources/Block.png" };
 
-		const int worldLevel{ m_MapHeight };
+		const int worldLevel{ 16 };
 		for (int x{}; x < m_MapSize; ++x)
 		{
 			for (int z{}; z < m_MapSize; ++z)
