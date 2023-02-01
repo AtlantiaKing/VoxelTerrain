@@ -30,8 +30,14 @@ namespace dae {
 
 		m_pFace = new Face{ m_pDevice, "Resources/Block.png" };
 
-		m_pBlocks.push_back(new Block{ { 0.0f, 0.0f, 0.0f } });
-		m_pBlocks.push_back(new Block{ { 0.0f, 1.0f, 1.0f } });
+		constexpr int mapSize{ 5 };
+		for (int x{}; x < mapSize; ++x)
+		{
+			for (int z{}; z < mapSize; ++z)
+			{
+				m_pBlocks.push_back(new Block{ { static_cast<float>(x), 0.0f, static_cast<float>(z) } });
+			}
+		}
 	}
 
 	Renderer::~Renderer()

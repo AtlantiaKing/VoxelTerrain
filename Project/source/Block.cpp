@@ -5,6 +5,42 @@
 dae::Block::Block(const Vector3 position)
 	: m_TranslationMatrix{ Matrix::CreateTranslation(position) }
 {
+	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
+	{
+		switch (static_cast<Face::FaceDirection>(i))
+		{
+		case Face::FaceDirection::FORWARD:
+		{
+			m_FaceTransformations[i] = Matrix::CreateTranslation({ 0.0f, 0.0f, -0.5f });
+			break;
+		}
+		case Face::FaceDirection::RIGHT:
+		{
+			m_FaceTransformations[i] = Matrix::CreateRotationY(90.0f * TO_RADIANS) * Matrix::CreateTranslation({ -0.5f, 0.0f, 0.0f });
+			break;
+		}
+		case Face::FaceDirection::LEFT:
+		{
+			m_FaceTransformations[i] = Matrix::CreateRotationY(-90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.5f, 0.0f, 0.0f });
+			break;
+		}
+		case Face::FaceDirection::BACK:
+		{
+			m_FaceTransformations[i] = Matrix::CreateRotationY(180.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, 0.0f, 0.5f });
+			break;
+		}
+		case Face::FaceDirection::UP:
+		{
+			m_FaceTransformations[i] = Matrix::CreateRotationX(-90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, 0.5f, 0.0f });
+			break;
+		}
+		case Face::FaceDirection::BOTTOM:
+		{
+			m_FaceTransformations[i] = Matrix::CreateRotationX(90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, -0.5f, 0.0f });
+			break;
+		}
+		}
+	}
 }
 
 void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewProjection, Face* pFace) const
@@ -13,55 +49,8 @@ void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewP
 
 	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
 	{
-		Matrix faceWorldViewProjection{};
-		Matrix faceWorldMatrix{};
+		const Matrix& faceTransformation{ m_FaceTransformations[i] };
 
-		switch (static_cast<Face::FaceDirection>(i))
-		{
-		case Face::FaceDirection::FORWARD:
-		{
-			const Matrix faceTransformation{ Matrix::CreateTranslation({ 0.0f, 0.0f, -0.5f }) };
-			faceWorldViewProjection = faceTransformation * worldViewProjection;
-			faceWorldMatrix = faceTransformation * m_TranslationMatrix;
-			break;
-		}
-		case Face::FaceDirection::RIGHT:
-		{
-			const Matrix faceTransformation{ Matrix::CreateRotationY(90.0f * TO_RADIANS) * Matrix::CreateTranslation({ -0.5f, 0.0f, 0.0f }) };
-			faceWorldViewProjection = faceTransformation * worldViewProjection;
-			faceWorldMatrix = faceTransformation * m_TranslationMatrix;
-			break;
-		}
-		case Face::FaceDirection::LEFT:
-		{
-			const Matrix faceTransformation{ Matrix::CreateRotationY(-90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.5f, 0.0f, 0.0f }) };
-			faceWorldViewProjection = faceTransformation * worldViewProjection;
-			faceWorldMatrix = faceTransformation * m_TranslationMatrix;
-			break;
-		}
-		case Face::FaceDirection::BACK:
-		{
-			const Matrix faceTransformation{ Matrix::CreateRotationY(180.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, 0.0f, 0.5f }) };
-			faceWorldViewProjection = faceTransformation * worldViewProjection;
-			faceWorldMatrix = faceTransformation * m_TranslationMatrix;
-			break;
-		}
-		case Face::FaceDirection::UP:
-		{
-			const Matrix faceTransformation{ Matrix::CreateRotationX(-90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, 0.5f, 0.0f }) };
-			faceWorldViewProjection = faceTransformation * worldViewProjection;
-			faceWorldMatrix = faceTransformation * m_TranslationMatrix;
-			break;
-		}
-		case Face::FaceDirection::BOTTOM:
-		{
-			const Matrix faceTransformation{ Matrix::CreateRotationX(90.0f * TO_RADIANS) * Matrix::CreateTranslation({ 0.0f, -0.5f, 0.0f }) };
-			faceWorldViewProjection = faceTransformation * worldViewProjection;
-			faceWorldMatrix = faceTransformation * m_TranslationMatrix;
-			break;
-		}
-		}
-
-		pFace->Render(pDeviceContext, faceWorldMatrix, faceWorldViewProjection, Face::FaceDirection::FORWARD);
+		pFace->Render(pDeviceContext, faceTransformation * m_TranslationMatrix, faceTransformation * worldViewProjection);
 	}
 }

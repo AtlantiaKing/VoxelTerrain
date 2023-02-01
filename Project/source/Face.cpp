@@ -65,7 +65,7 @@ namespace dae
 		delete m_pMaterial;
 	}
 
-	void Face::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& worldMatrix, const Matrix& worldViewProjection, FaceDirection direction) const
+	void Face::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& worldMatrix, const Matrix& worldViewProjection) const
 	{
 		m_pMaterial->SetMatrices(worldMatrix, worldViewProjection);
 
