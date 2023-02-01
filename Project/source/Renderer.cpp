@@ -36,6 +36,7 @@ namespace dae {
 
 	Renderer::~Renderer()
 	{
+		delete m_pWorld;
 		delete m_pFace;
 		delete m_pCamera;
 
