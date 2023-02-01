@@ -2,8 +2,8 @@
 // Globals
 //------------------------------------------------
 float gPI = 3.14159265359f;
-float gLightIntensity = 7.0f;
-float3 gLightDirection = normalize(float3(0.577f, -0.577f, 0.577f));
+float gLightIntensity = 4.0f;
+float3 gLightDirection = normalize(float3(-0.40825f, 0.40825f, 0.8165));
 float4 gAmbientColor = float4(0.025f, 0.025f, 0.025f, 1.0f);
 
 float4x4 gWorldViewProj : WorldViewProjection;

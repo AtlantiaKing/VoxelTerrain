@@ -33,7 +33,7 @@ namespace dae
 
 		Camera* m_pCamera{};
 		Face* m_pFace{};
-		Block* m_pBlock{};
+		std::vector<Block*> m_pBlocks{};
 
 		//DIRECTX
 		ID3D11SamplerState* m_pSampleState{};

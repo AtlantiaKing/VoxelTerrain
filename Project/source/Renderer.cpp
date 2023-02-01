@@ -30,12 +30,16 @@ namespace dae {
 
 		m_pFace = new Face{ m_pDevice, "Resources/Block.png" };
 
-		m_pBlock = new Block{ { 0.0f, 0.0f, 0.0f } };
+		m_pBlocks.push_back(new Block{ { 0.0f, 0.0f, 0.0f } });
+		m_pBlocks.push_back(new Block{ { 0.0f, 1.0f, 1.0f } });
 	}
 
 	Renderer::~Renderer()
 	{
-		delete m_pBlock;
+		for (Block* pBlock : m_pBlocks)
+		{
+			delete pBlock;
+		}
 		delete m_pFace;
 		delete m_pCamera;
 
@@ -75,7 +79,10 @@ namespace dae {
 		m_pDeviceContext->ClearDepthStencilView(m_pDepthStencilView, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
 		// Set pipeline + Invoke drawcalls (= render)
-		m_pBlock->Render(m_pDeviceContext, m_pCamera->GetViewMatrix() * m_pCamera->GetProjectionMatrix(), m_pFace);
+		for (Block* pBlock : m_pBlocks)
+		{
+			pBlock->Render(m_pDeviceContext, m_pCamera->GetViewMatrix() * m_pCamera->GetProjectionMatrix(), m_pFace);
+		}
 
 		// Present backbuffer (swap)
 		m_pSwapChain->Present(0, 0);
