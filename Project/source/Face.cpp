@@ -18,7 +18,7 @@ namespace dae
 			{ { 0.5f, 0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 1.0f } },
 			{ { 0.5f, -0.5f, 0.0f }, { 0.0f, 0.0f, -1.0f }, { 1.0f, 0.0f } }
 		};
-		std::vector<uint32_t> indices{ 1, 2, 0, 2, 3, 0 };
+		std::vector<uint32_t> indices{ 1, 2, 0, 3 };
 
 		// Create Input Layout
 		m_pInputLayout = m_pMaterial->LoadInputLayout(pDevice);
@@ -70,7 +70,7 @@ namespace dae
 		m_pMaterial->SetMatrices(worldMatrix, worldViewProjection);
 
 		// Set primitive topology
-		pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		pDeviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 
 		// Set input layout
 		pDeviceContext->IASetInputLayout(m_pInputLayout);
