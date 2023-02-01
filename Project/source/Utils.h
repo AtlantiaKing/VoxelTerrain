@@ -16,7 +16,7 @@ namespace dae
 			a *= 3284157443; b ^= a << s | a >> w - s;
 			b *= 1911520717; a ^= b << s | b >> w - s;
 			a *= 2048419325;
-			float random = a * (3.14159265 / ~(~0u >> 1)); // in [0, 2*Pi]
+			float random = static_cast<float>(a * (3.14159265 / ~(~0u >> 1))); // in [0, 2*Pi]
 			Vector2 v;
 			v.x = cos(random); v.y = sin(random);
 			return v;
