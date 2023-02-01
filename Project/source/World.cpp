@@ -2,6 +2,7 @@
 #include "World.h"
 #include "Vector3Int.h"
 #include "Block.h"
+#include "TextureManager.h"
 
 dae::World::World()
 {
@@ -9,10 +10,15 @@ dae::World::World()
 	{
 		for (int z{}; z < m_MapSize; ++z)
 		{
-			const int worldLevel{ /*static_cast<int>(sin(static_cast<float>(x)) * 3 + 25)*/m_MapHeight };
-			for (int y{ 0 }; y < worldLevel; ++y)
+			const int worldLevel{ static_cast<int>(sin(static_cast<float>(x / 3)) * 15 + 25) };
+			constexpr int seaLevel{ 30 };
+			for (int y{ 0 }; y < m_MapHeight; ++y)
 			{
-				m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = new Block{ { x, y, z } };
+				if (y > worldLevel && y > seaLevel) continue;
+
+				Texture* pTexture{ y <= worldLevel ? TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::DIRT) : TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::WATER) };
+
+				m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = new Block{ { x, y, z }, pTexture };
 			}
 		}
 	}
