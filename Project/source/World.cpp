@@ -24,13 +24,18 @@ dae::World::World()
 			worldLevel *= m_MapHeight;
 
 			constexpr int seaLevel{ 30 };
+			constexpr int snowLevel{ 43 };
 			for (int y{ 0 }; y < m_MapHeight; ++y)
 			{
 				if (y > worldLevel && y > seaLevel) continue;
 
 				TextureManager::TextureType textureType{};
 
-				if (y == static_cast<int>(worldLevel))
+				if (y > snowLevel)
+				{
+					textureType = TextureManager::TextureType::SNOW;
+				}
+				else if (y == static_cast<int>(worldLevel))
 				{
 					textureType = TextureManager::TextureType::GRASS;
 				}

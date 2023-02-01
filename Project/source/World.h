@@ -27,7 +27,7 @@ namespace dae
 
 		const int m_NrOctaves{ 5 };
 		const float m_MapZoom{ 1.0f };
-		const float m_MapOffset{ 0.0f };
+		const float m_MapOffset{ 493.0f };
 	};
 }
 

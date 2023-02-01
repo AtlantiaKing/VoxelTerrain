@@ -17,7 +17,8 @@ namespace dae
 		{
 			DIRT,
 			WATER,
-			GRASS
+			GRASS,
+			SNOW
 		};
 
 		~TextureManager();
