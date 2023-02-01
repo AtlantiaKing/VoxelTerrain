@@ -28,22 +28,33 @@ dae::World::World()
 			{
 				if (y > worldLevel && y > seaLevel) continue;
 
-				Texture* pTexture{};
+				TextureManager::TextureType textureType{};
 
 				if (y == static_cast<int>(worldLevel))
 				{
-					pTexture = TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::GRASS);
+					textureType = TextureManager::TextureType::GRASS;
 				}
 				else if (y > worldLevel)
 				{
-					pTexture = TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::WATER);
+					textureType = TextureManager::TextureType::WATER;
 				}
 				else
 				{
-					pTexture = TextureManager::GetInstance()->GetTexture(TextureManager::TextureType::DIRT);
+					textureType = TextureManager::TextureType::DIRT;
 				}
 
-				m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = new Block{ { x, y, z }, pTexture };
+				const std::vector<Texture*>& pTextures{ TextureManager::GetInstance()->GetTextures(textureType) };
+
+				Texture* pMainTexture{ pTextures[0] };
+				Texture* pTopTexture{};
+				Texture* pBottomTexture{};
+				if (pTextures.size() > 1)
+				{
+					pTopTexture = pTextures[1];
+					pBottomTexture = pTextures[2];
+				}
+
+				m_pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = new Block{ { x, y, z }, pMainTexture, pTopTexture, pBottomTexture };
 			}
 		}
 	}

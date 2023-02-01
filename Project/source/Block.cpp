@@ -5,9 +5,11 @@
 bool dae::Block::m_Initialized{};
 dae::Vector3Int dae::Block::m_NeighbouringBlocks[6]{};
 
-dae::Block::Block(const Vector3Int& position, Texture* pTexture)
+dae::Block::Block(const Vector3Int& position, Texture* pSideTexture, Texture* pTopTexture, Texture* pBottomTexture)
 	: m_TranslationMatrix{ Matrix::CreateTranslation(position) }
-	, m_pTexture{ pTexture }
+	, m_pSideTexture{ pSideTexture }
+	, m_pTopTexture{ pTopTexture }
+	, m_pBottomTexture{ pBottomTexture }
 {
 	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
 	{
@@ -57,7 +59,7 @@ dae::Block::Block(const Vector3Int& position, Texture* pTexture)
 
 void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(const Vector3Int&)> isBlockPredicate, const Matrix& viewProjection, Face* pFace) const
 {
-	pFace->SetTexture(m_pTexture);
+	pFace->SetTexture(m_pSideTexture);
 
 	const Vector3Int position{ m_TranslationMatrix.GetTranslation() };
 
@@ -75,6 +77,16 @@ void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(
 	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
 	{
 		if (isBlockPredicate(position + m_NeighbouringBlocks[i])) continue;
+
+		switch (static_cast<Face::FaceDirection>(i))
+		{
+		case Face::FaceDirection::UP:
+			if (m_pTopTexture) pFace->SetTexture(m_pTopTexture);
+			break;
+		case Face::FaceDirection::BOTTOM:
+			if (m_pBottomTexture) pFace->SetTexture(m_pBottomTexture);
+			break;
+		}
 
 		const Matrix& faceTransformation{ m_FaceTransformations[i] };
 

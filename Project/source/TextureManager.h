@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <vector>
 
 namespace dae
 {
@@ -24,9 +25,9 @@ namespace dae
 		static void CreateInstance(ID3D11Device* pDevice);
 		static TextureManager* GetInstance();
 
-		Texture* GetTexture(TextureType type);
+		const std::vector<Texture*>& GetTextures(TextureType type) const;
 	private:
 
-		std::unordered_map<TextureType, Texture*> m_pTextures{};
+		std::unordered_map<TextureType, std::vector<Texture*>> m_pTextures{};
 	};
 }
