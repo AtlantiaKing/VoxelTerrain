@@ -6,6 +6,7 @@
 
 #undef main
 #include "Renderer.h"
+#include <thread>
 
 using namespace dae;
 
@@ -45,6 +46,10 @@ int main(int argc, char* args[])
 	float printTimer = 0.f;
 	bool isLooping = true;
 	bool isShowingFPS{ false };
+
+	//--------- Render ---------
+	std::thread renderThread{ [&]() { while (isLooping) pRenderer->Render(); } };
+
 	while (isLooping)
 	{
 		//--------- Get input events ---------
@@ -69,10 +74,7 @@ int main(int argc, char* args[])
 		}
 
 		//--------- Update ---------
-		pRenderer->Update(pTimer);
-
-		//--------- Render ---------
-		pRenderer->Render();
+		pRenderer->Update(pTimer);		
 
 		//--------- Timer ---------
 		pTimer->Update();
@@ -84,6 +86,9 @@ int main(int argc, char* args[])
 		}
 	}
 	pTimer->Stop();
+
+	// Wait for the render thread to stop
+	renderThread.join();
 
 	//Shutdown "framework"
 	delete pRenderer;
