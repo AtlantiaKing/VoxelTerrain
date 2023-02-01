@@ -58,6 +58,17 @@ void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(
 {
 	const Vector3Int position{ m_TranslationMatrix.GetTranslation() };
 
+	Vector4 projectedPosition{ (m_TranslationMatrix * viewProjection).TransformPoint(Vector4{ 0.0f, 0.0f, 0.0f, 1.0f }) };
+	projectedPosition.x /= projectedPosition.w;
+	projectedPosition.y /= projectedPosition.w;
+	projectedPosition.z /= projectedPosition.w;
+
+	constexpr float projectionXMargin{ 2.0f };
+	constexpr float projectionYMargin{ 2.5f };
+	if (projectedPosition.x < -projectionXMargin || projectedPosition.x > projectionXMargin ||
+		projectedPosition.y < -projectionYMargin || projectedPosition.y > projectionYMargin ||
+		projectedPosition.z < 0.0f || projectedPosition.z > 1.0f) return;
+
 	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
 	{
 		if (isBlockPredicate(position + m_NeighbouringBlocks[i])) continue;
