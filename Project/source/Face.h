@@ -27,8 +27,9 @@ namespace dae
 		~Face();
 
 		void SetTexture(Texture* pTexture);
+		void SetMatrix(const Matrix& worldViewProjection);
 
-		void Render(ID3D11DeviceContext* pDeviceContext, const Matrix& worldMatrix, const Matrix& worldViewProjection) const;
+		void Render(ID3D11DeviceContext* pDeviceContext, FaceDirection direction) const;
 	private:
 		Material* m_pMaterial{};
 

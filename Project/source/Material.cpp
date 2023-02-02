@@ -15,10 +15,6 @@ namespace dae
 		m_pMatWorldViewProjVariable = m_pEffect->GetVariableByName("gWorldViewProj")->AsMatrix();
 		if (!m_pMatWorldViewProjVariable->IsValid()) std::wcout << L"m_pMatWorldViewProjVariable not valid\n";
 
-		// Save the worldviewprojection variable of the effect as a member variable
-		m_pMatWorldVariable = m_pEffect->GetVariableByName("gWorld")->AsMatrix();
-		if (!m_pMatWorldVariable->IsValid()) std::wcout << L"m_pMatWorldVariable not valid\n";
-
 		// Save the samplestate variable of the effect as a member variable
 		m_pSamplerStateVariable = m_pEffect->GetVariableByName("gSamState")->AsSampler();
 		if (!m_pSamplerStateVariable->IsValid()) std::wcout << L"m_pSamplerStateVariable not valid\n";
@@ -33,10 +29,9 @@ namespace dae
 		if (m_pEffect) m_pEffect->Release();
 	}
 
-	void Material::SetMatrices(const Matrix& worldMatrix, const Matrix& worldViewProjection)
+	void Material::SetMatrix(const Matrix& worldViewProjection)
 	{
 		m_pMatWorldViewProjVariable->SetMatrix(reinterpret_cast<const float*>(&worldViewProjection));
-		m_pMatWorldVariable->SetMatrix(reinterpret_cast<const float*>(&worldMatrix));
 	}
 
 	void Material::SetTexture(Texture* pTexture)

@@ -12,17 +12,15 @@ dae::World::World()
 	m_IsBlockPredicate = [&](const Vector3Int& position) -> bool
 	{
 		const Vector2Int chunkPos{ position.x / m_MapSize, position.z / m_MapSize };
-
-		auto it = m_Chunks.find(chunkPos);
-		if (it == m_Chunks.end()) return false;
 		
-		Chunk* chunk{ (*it).second };
+		auto it{ m_Chunks.find(chunkPos) };
+		if (it == m_Chunks.end()) return false;
+
+		Chunk* chunk{ it->second };
 
 		const Vector3Int lookUpPos{ position.x - chunkPos.x * m_MapSize, position.y, position.z - chunkPos.y * m_MapSize };
 
-		return lookUpPos.x >= 0 && lookUpPos.z >= 0 &&
-			lookUpPos.x < m_MapSize&& lookUpPos.z < m_MapSize&&
-			lookUpPos.y < m_MapHeight&& lookUpPos.y >= 0 &&
+		return lookUpPos.y < m_MapHeight && lookUpPos.y >= 0 &&
 			chunk->pBlocks[lookUpPos.x + lookUpPos.z * m_MapSize + lookUpPos.y * m_MapSize * m_MapSize];
 	};
 }
@@ -57,7 +55,7 @@ void dae::World::Update(const Vector3& camPosition)
 				}
 				else
 				{
-					LoadChunk(chunkPos.x, chunkPos.y);
+					LoadChunk(chunkPos);
 				}
 			}
 			else
@@ -87,15 +85,13 @@ void dae::World::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewP
 	{
 		Chunk* chunk{ chunkPair.second };
 
-		if (!chunk) continue;
-
-		if (!chunk->canRender) continue;
+		if (!chunk || !chunk->canRender) continue;
 
 		for (int x{}; x < m_MapSize; ++x)
 		{
 			for (int z{}; z < m_MapSize; ++z)
 			{
-				for (int y{}; y < m_MapHeight; ++y)
+				for (int y{ m_MapHeight - 1 }; y >= m_SeaLevel - 1; --y)
 				{
 					Block* pBlock{ chunk->pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] };
 
@@ -106,29 +102,28 @@ void dae::World::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewP
 					if (m_IsBlockPredicate(position + Vector3Int::UnitX) && m_IsBlockPredicate(position - Vector3Int::UnitX) &&
 						m_IsBlockPredicate(position + Vector3Int::UnitY) && m_IsBlockPredicate(position - Vector3Int::UnitY) &&
 						m_IsBlockPredicate(position + Vector3Int::UnitZ) && m_IsBlockPredicate(position - Vector3Int::UnitZ))
+					{
+						if (position.y < chunk->heightMap[x + z * m_MapSize]) break;
 						continue;
+					}
 
-					pBlock->Render(pDeviceContext, m_IsBlockPredicate, position, viewProjection, pFace);
-
-					int i{};
+					pBlock->Render(m_IsBlockPredicate, position, viewProjection, pFace);
 				}
 			}
 		}
 	}
 }
 
-void dae::World::LoadChunk(int chunkX, int chunkZ)
+void dae::World::LoadChunk(const Vector2Int& chunkPos)
 {
-	const Vector2Int chunkPos{ chunkX, chunkZ };
-
 	Chunk* pChunk{ new Chunk{} };
 
 	for (int x{}; x < m_MapSize; ++x)
 	{
 		for (int z{}; z < m_MapSize; ++z)
 		{
-			const int worldPosX{ chunkX * m_MapSize + x };
-			const int worldPosZ{ chunkZ * m_MapSize + z };
+			const int worldPosX{ chunkPos.x * m_MapSize + x };
+			const int worldPosZ{ chunkPos.y * m_MapSize + z };
 
 			float worldLevel{};
 			float maxValue{};
@@ -222,13 +217,16 @@ void dae::World::LoadTrees(int chunkX, int chunkY)
 	{
 		for (int z{}; z < m_MapSize; ++z)
 		{
-			if (!HasTree(Vector2Int{ x + chunkX * m_MapSize,  z + chunkY * m_MapSize })) continue;
+			const int blockPosInChunkX{ x + chunkX * m_MapSize };
+			const int blockPosInChunkZ{ z + chunkY * m_MapSize };
+
+			if (!HasTree(Vector2Int{ blockPosInChunkX,  blockPosInChunkZ })) continue;
 
 			const int y{ pChunk->heightMap[x + z * m_MapSize] };
 
 			if (y <= m_SeaLevel + m_BeachSize) continue;
 
-			CreateTree(Vector3Int{ x + chunkX * m_MapSize, y + 1, z + chunkY * m_MapSize }, pChunk);
+			CreateTree(Vector3Int{ blockPosInChunkX, y + 1, blockPosInChunkZ }, pChunk);
 
 			break;
 		}

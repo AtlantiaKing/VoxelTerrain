@@ -7,7 +7,6 @@ float3 gLightDirection = normalize(float3(0.40825f, -0.40825f, -0.8165));
 float4 gAmbientColor = float4(0.025f, 0.025f, 0.025f, 1.0f);
 
 float4x4 gWorldViewProj : WorldViewProjection;
-float4x4 gWorld : WorldMatrix;
 
 Texture2D gDiffuseMap : DiffuseMap;
 
@@ -42,7 +41,7 @@ VS_OUTPUT VS(VS_INPUT input)
 {
 	VS_OUTPUT output = (VS_OUTPUT)0;
 	output.Position = mul(float4(input.Position, 1.0f), gWorldViewProj);
-	output.Normal = mul(normalize(input.Normal), (float3x3)gWorld);
+	output.Normal = input.Normal;
 	output.UV = input.UV;
 	return output;
 }

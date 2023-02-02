@@ -48,10 +48,10 @@ int main(int argc, char* args[])
 	bool isShowingFPS{ false };
 
 	//--------- Render ---------
-	std::thread renderThread{ [&]()  { 	while (isLooping) pRenderer->Render(); } };
+	std::thread renderThread{ [&]()  { while (isLooping) pRenderer->Render(); } };
 
 	//---- World Generation ----
-	std::thread worldThread{ [&]() { 	while (isLooping) pRenderer->UpdateWorld(); } };
+	std::thread worldThread{ [&]() { while (isLooping) pRenderer->UpdateWorld(); } };
 
 	while (isLooping)
 	{
@@ -77,7 +77,7 @@ int main(int argc, char* args[])
 		}
 
 		//--------- Update ---------
-		pRenderer->Update(pTimer);		
+		pRenderer->Update(pTimer);	
 
 		//--------- Timer ---------
 		pTimer->Update();

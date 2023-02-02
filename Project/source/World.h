@@ -65,9 +65,9 @@ namespace dae
 		const int m_SeaLevel{ 30 };
 		const int m_SnowLevel{ 43 };
 		const int m_BeachSize{ 2 };
-		const int m_RenderDistance{ 5 };
+		const int m_RenderDistance{ 3 };
 
-		void LoadChunk(int chunkX, int chunkY);
+		void LoadChunk(const Vector2Int& chunkPos);
 		void LoadTrees(int chunkX, int chunkY);
 		bool HasTree(const Vector2Int& position);
 		void CreateTree(const Vector3Int& position, Chunk* pChunk);
