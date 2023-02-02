@@ -39,9 +39,8 @@ void dae::World::Update(const Vector3& camPosition)
 {
 	const Vector2Int camChunk{ static_cast<int>(camPosition.x / m_MapSize), static_cast<int>(camPosition.z / m_MapSize) };
 
-	constexpr int destroyRange{ 5 };
-	constexpr int createRange{ 4 };
-	constexpr int renderRange{ 3 };
+	const int destroyRange{ m_RenderDistance + 2 };
+	const int createRange{ m_RenderDistance + 1 };
 
 	for (int x{ -destroyRange }; x <= destroyRange; ++x)
 	{
@@ -54,7 +53,7 @@ void dae::World::Update(const Vector3& camPosition)
 				auto it = m_Chunks.find(chunkPos);
 				if (it != m_Chunks.end())
 				{
-					it->second->canRender = abs(x) <= renderRange && abs(z) <= renderRange;
+					it->second->canRender = abs(x) <= m_RenderDistance && abs(z) <= m_RenderDistance;
 				}
 				else
 				{
@@ -73,9 +72,9 @@ void dae::World::Update(const Vector3& camPosition)
 		}
 	}
 
-	for (int x{ -renderRange }; x <= renderRange; ++x)
+	for (int x{ -m_RenderDistance }; x <= m_RenderDistance; ++x)
 	{
-		for (int z{ -renderRange }; z <= renderRange; ++z)
+		for (int z{ -m_RenderDistance }; z <= m_RenderDistance; ++z)
 		{
 			LoadTrees(camChunk.x + x, camChunk.y + z);
 		}
