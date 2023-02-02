@@ -103,8 +103,6 @@
     </ClCompile>
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="World.cpp" />
-    <ClCompile Include="BlockManager.cpp">
-      <Filter>Math</Filter>
-    </ClCompile>
+    <ClCompile Include="BlockManager.cpp" />
   </ItemGroup>
 </Project>

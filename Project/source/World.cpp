@@ -6,6 +6,7 @@
 #include "Utils.h"
 #include "Vector2Int.h"
 #include "BlockType.h"
+#include "BlockManager.h"
 
 dae::World::World()
 {
@@ -145,7 +146,7 @@ void dae::World::LoadChunk(const Vector2Int& chunkPos)
 			{
 				if (y > worldLevel && y > m_SeaLevel) continue;
 
-				BlockType textureType{};
+				BlockType blockType{};
 
 				/*if (y > snowLevel)
 				{
@@ -156,48 +157,39 @@ void dae::World::LoadChunk(const Vector2Int& chunkPos)
 				{
 					if (hasWater)
 					{
-						textureType = BlockType::SAND;
+						blockType = BlockType::SAND;
 					}
 					else
 					{
 						if (y < m_SeaLevel + m_BeachSize)
 						{
-							textureType = BlockType::SAND;
+							blockType = BlockType::SAND;
 						}
 						else
 						{
-							textureType = BlockType::GRASS;
+							blockType = BlockType::GRASS;
 						}
 					}
 
 				}
 				else if (y > worldLevel)
 				{
-					textureType = BlockType::WATER;
+					blockType = BlockType::WATER;
 
 					hasWater = true;
 				}
 				else if(y < m_SeaLevel + m_BeachSize)
 				{
-					textureType = BlockType::SAND;
+					blockType = BlockType::SAND;
 				}
 				else
 				{
-					textureType = BlockType::DIRT;
+					blockType = BlockType::DIRT;
 				}
 
-				const std::vector<Texture*>& pTextures{ TextureManager::GetInstance()->GetTextures(textureType) };
+				Block* pBlock{ BlockManager::GetInstance()->GetBlock(blockType) };
 
-				Texture* pMainTexture{ pTextures[0] };
-				Texture* pTopTexture{};
-				Texture* pBottomTexture{};
-				if (pTextures.size() > 1)
-				{
-					pTopTexture = pTextures[1];
-					pBottomTexture = pTextures[2];
-				}
-
-				pChunk->pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = new Block{ pMainTexture, pTopTexture, pBottomTexture };
+				pChunk->pBlocks[x + z * m_MapSize + y * m_MapSize * m_MapSize] = pBlock;
 			}
 		}
 	}
@@ -251,27 +243,28 @@ bool dae::World::HasTree(const Vector2Int& position)
 
 void dae::World::CreateTree(const Vector3Int& position, Chunk* pChunk)
 {
-	Texture* woodTexture{ TextureManager::GetInstance()->GetTextures(BlockType::WOOD)[0] };
-	Texture* leavesTexture{ TextureManager::GetInstance()->GetTextures(BlockType::LEAVES)[0] };
-
 	Vector2Int chunkPos{ position.x / m_MapSize, position.z / m_MapSize };
 	Vector3Int blockInChunkPos{ position.x - chunkPos.x * m_MapSize, position.y, position.z - chunkPos.y * m_MapSize };
+
+	Block* pWoodBlock{ BlockManager::GetInstance()->GetBlock(BlockType::WOOD) };
 
 	for (int i{}; i < 5; ++i)
 	{
 		if (blockInChunkPos.y + i < m_MapHeight)
-			AddBlock(position.x, position.y + i, position.z, new Block{ woodTexture });
+			AddBlock(position.x, position.y + i, position.z, pWoodBlock);
 	}
+
+	Block* pLeavesBlock{ BlockManager::GetInstance()->GetBlock(BlockType::LEAVES) };
 
 	for (int x{ -2 }; x <= 2; ++x)
 	{
 		for (int z{ -2 }; z <= 2; ++z)
 		{
 			if (position.y + 3 < m_MapHeight)
-				AddBlock(position.x + x, position.y + 3, position.z + z, new Block{ leavesTexture });
+				AddBlock(position.x + x, position.y + 3, position.z + z, pLeavesBlock);
 		
 			if (position.y + 4 < m_MapHeight)
-				AddBlock(position.x + x, position.y + 4, position.z + z, new Block{ leavesTexture });
+				AddBlock(position.x + x, position.y + 4, position.z + z, pLeavesBlock);
 		}
 	}
 
@@ -280,12 +273,12 @@ void dae::World::CreateTree(const Vector3Int& position, Chunk* pChunk)
 		for (int z{ -1 }; z <= 1; ++z)
 		{
 			if(blockInChunkPos.y + 5 < m_MapHeight)
-				AddBlock(position.x + x, position.y + 5, position.z + z, new Block{ leavesTexture });
+				AddBlock(position.x + x, position.y + 5, position.z + z, pLeavesBlock);
 
 			if (abs(x) && abs(z)) continue;
 
 			if (blockInChunkPos.y + 6 < m_MapHeight)
-				AddBlock(position.x + x, position.y + 6, position.z + z, new Block{ leavesTexture });
+				AddBlock(position.x + x, position.y + 6, position.z + z, pLeavesBlock);
 		}
 	}
 }

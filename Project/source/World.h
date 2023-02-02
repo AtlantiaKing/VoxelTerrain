@@ -41,14 +41,6 @@ namespace dae
 
 		struct Chunk
 		{
-			~Chunk()
-			{
-				for (Block* pBlock : pBlocks)
-				{
-					delete pBlock;
-				}
-			}
-
 			bool canRender{};
 			bool hasTrees{};
 			int heightMap[m_MapSize * m_MapSize]{};
