@@ -8,5 +8,6 @@ enum class BlockType
 	SNOW,
 	WOOD,
 	LEAVES,
-	SAND
+	SAND,
+	CACTUS
 };

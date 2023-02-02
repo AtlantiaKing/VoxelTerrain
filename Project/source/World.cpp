@@ -5,7 +5,6 @@
 #include "TextureManager.h"
 #include "Utils.h"
 #include "Vector2Int.h"
-#include "BlockType.h"
 #include "BlockManager.h"
 
 dae::World::World()
@@ -142,6 +141,8 @@ void dae::World::LoadChunk(const Vector2Int& chunkPos)
 
 			pChunk->heightMap[x + z * m_MapSize] = worldLevel > m_SeaLevel ? static_cast<int>(worldLevel) : m_SeaLevel;
 
+			const BlockType biomeBlock{ GetBiomeBlock(worldPosX, worldPosZ) };
+
 			for (int y{ m_MapHeight }; y >= 0; --y)
 			{
 				if (y > worldLevel && y > m_SeaLevel) continue;
@@ -167,7 +168,7 @@ void dae::World::LoadChunk(const Vector2Int& chunkPos)
 						}
 						else
 						{
-							blockType = BlockType::GRASS;
+							blockType = biomeBlock;
 						}
 					}
 
@@ -184,7 +185,14 @@ void dae::World::LoadChunk(const Vector2Int& chunkPos)
 				}
 				else
 				{
-					blockType = BlockType::DIRT;
+					if (biomeBlock == BlockType::GRASS)
+					{
+						blockType = BlockType::DIRT;
+					}
+					else
+					{
+						blockType = biomeBlock;
+					}
 				}
 
 				Block* pBlock{ BlockManager::GetInstance()->GetBlock(blockType) };
@@ -195,6 +203,57 @@ void dae::World::LoadChunk(const Vector2Int& chunkPos)
 	}
 
 	m_Chunks[chunkPos] = pChunk;
+}
+
+
+BlockType dae::World::GetBiomeBlock(int x, int z)
+{
+	float temperature{};
+	float humidity{};
+
+	constexpr float biomeZoom{ 190.0f };
+	constexpr float temperatureOffset{ 25.0f};
+	constexpr float humidityOffset{ 75.0f };
+
+	float maxValue{};
+	for (int i{ 1 }; i <= m_NrOctaves; ++i)
+	{
+		maxValue += 1.0f / i;
+		temperature += Utils::PerlinFunction(static_cast<float>(x) / m_MapSize, static_cast<float>(z) / m_MapSize, i, biomeZoom, temperatureOffset) / i;
+		humidity += Utils::PerlinFunction(static_cast<float>(x) / m_MapSize, static_cast<float>(z) / m_MapSize, i, biomeZoom, humidityOffset) / i;
+	}
+
+	temperature /= (maxValue / 2.0f);
+	humidity /= (maxValue / 2.0f);
+
+	temperature /= 2.0f;
+	humidity /= 2.0f;
+
+	temperature += 0.5f;
+	humidity += 0.5f;
+
+	if (temperature > 0.5f)
+	{
+		if (humidity > 0.5f)
+		{
+			return BlockType::GRASS;
+		}
+		else
+		{
+			return BlockType::SAND;
+		}
+	}
+	else
+	{
+		if (humidity > 0.5f)
+		{
+			return BlockType::GRASS;
+		}
+		else
+		{
+			return BlockType::SNOW;
+		}
+	}
 }
 
 void dae::World::LoadTrees(int chunkX, int chunkY)
@@ -209,16 +268,24 @@ void dae::World::LoadTrees(int chunkX, int chunkY)
 	{
 		for (int z{}; z < m_MapSize; ++z)
 		{
-			const int blockPosInChunkX{ x + chunkX * m_MapSize };
-			const int blockPosInChunkZ{ z + chunkY * m_MapSize };
+			const int blockWorldPosX{ x + chunkX * m_MapSize };
+			const int blockWorldPosZ{ z + chunkY * m_MapSize };
 
-			if (!HasTree(Vector2Int{ blockPosInChunkX,  blockPosInChunkZ })) continue;
+			if (!HasTree(Vector2Int{ blockWorldPosX,  blockWorldPosZ })) continue;
 
 			const int y{ pChunk->heightMap[x + z * m_MapSize] };
 
 			if (y <= m_SeaLevel + m_BeachSize) continue;
 
-			CreateTree(Vector3Int{ blockPosInChunkX, y + 1, blockPosInChunkZ }, pChunk);
+			switch (GetBiomeBlock(blockWorldPosX, blockWorldPosZ))
+			{
+			case BlockType::GRASS:
+				CreateTree(Vector3Int{ blockWorldPosX, y + 1, blockWorldPosZ }, pChunk);
+				break;
+			case BlockType::SAND:
+				CreateCactus(Vector3Int{ blockWorldPosX, y + 1, blockWorldPosZ }, pChunk);
+				break;
+			}
 
 			break;
 		}
@@ -280,6 +347,23 @@ void dae::World::CreateTree(const Vector3Int& position, Chunk* pChunk)
 			if (blockInChunkPos.y + 6 < m_MapHeight)
 				AddBlock(position.x + x, position.y + 6, position.z + z, pLeavesBlock);
 		}
+	}
+}
+
+void dae::World::CreateCactus(const Vector3Int& position, Chunk* pChunk)
+{
+	Vector2Int chunkPos{ position.x / m_MapSize, position.z / m_MapSize };
+	Vector3Int blockInChunkPos{ position.x - chunkPos.x * m_MapSize, position.y, position.z - chunkPos.y * m_MapSize };
+
+	Block* pBlock{ BlockManager::GetInstance()->GetBlock(BlockType::CACTUS) };
+
+	for (int i{}; i < 3; ++i)
+	{
+		const int blockIdx{ blockInChunkPos.x + blockInChunkPos.z * m_MapSize + (position.y + i) * m_MapSize * m_MapSize };
+
+		if (blockInChunkPos.y + i < m_MapHeight)
+			if (!pChunk->pBlocks[blockIdx])
+				pChunk->pBlocks[blockIdx] = pBlock;
 	}
 }
 

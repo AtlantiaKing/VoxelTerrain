@@ -17,6 +17,9 @@ dae::TextureManager::TextureManager(ID3D11Device* pDevice)
 	m_pTextures[BlockType::WOOD].push_back(Texture::LoadFromFile(pDevice, "Resources/Wood.png"));
 	m_pTextures[BlockType::LEAVES].push_back(Texture::LoadFromFile(pDevice, "Resources/Leaves.png"));
 	m_pTextures[BlockType::SAND].push_back(Texture::LoadFromFile(pDevice, "Resources/Sand.png"));
+	m_pTextures[BlockType::CACTUS].push_back(Texture::LoadFromFile(pDevice, "Resources/Cactus.png"));
+	m_pTextures[BlockType::CACTUS].push_back(Texture::LoadFromFile(pDevice, "Resources/CactusTop.png"));
+	m_pTextures[BlockType::CACTUS].push_back(Texture::LoadFromFile(pDevice, "Resources/CactusBottom.png"));
 }
 
 dae::TextureManager* dae::TextureManager::GetInstance()

@@ -9,7 +9,7 @@ dae::BlockManager::BlockManager()
 {
     TextureManager* pTextureManager{ TextureManager::GetInstance() };
 
-    for (int i{}; i <= static_cast<int>(BlockType::SAND); ++i)
+    for (int i{}; i <= static_cast<int>(BlockType::CACTUS); ++i)
     {
         const BlockType type{ static_cast<BlockType>(i) };
 

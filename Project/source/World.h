@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include "Vector2Int.h"
 #include "Block.h"
+#include "BlockType.h"
 
 namespace std
 {
@@ -60,9 +61,11 @@ namespace dae
 		const int m_RenderDistance{ 3 };
 
 		void LoadChunk(const Vector2Int& chunkPos);
+		BlockType GetBiomeBlock(int x, int z);
 		void LoadTrees(int chunkX, int chunkY);
 		bool HasTree(const Vector2Int& position);
 		void CreateTree(const Vector3Int& position, Chunk* pChunk);
+		void CreateCactus(const Vector3Int& position, Chunk* pChunk);
 		void AddBlock(int x, int y, int z,  Block* pBlock);
 	};
 }
