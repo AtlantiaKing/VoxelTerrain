@@ -49,6 +49,9 @@ namespace dae
 				}
 			}
 
+			bool canRender{};
+			bool hasTrees{};
+			int heightMap[m_MapSize * m_MapSize]{};
 			Block* pBlocks[m_MapSize * m_MapSize * m_MapHeight]{};
 		};
 
@@ -59,10 +62,15 @@ namespace dae
 		const int m_NrOctaves{ 5 };
 		const float m_MapZoom{ 10.0f };
 		const float m_MapOffset{ 493.0f };
+		const int m_SeaLevel{ 30 };
+		const int m_SnowLevel{ 43 };
+		const int m_BeachSize{ 2 };
 
 		void LoadChunk(int chunkX, int chunkY);
+		void LoadTrees(int chunkX, int chunkY);
 		bool HasTree(const Vector2Int& position);
 		void CreateTree(const Vector3Int& position, Chunk* pChunk);
+		void AddBlock(int x, int y, int z,  Block* pBlock);
 	};
 }
 

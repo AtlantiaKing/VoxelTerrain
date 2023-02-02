@@ -48,15 +48,10 @@ int main(int argc, char* args[])
 	bool isShowingFPS{ false };
 
 	//--------- Render ---------
-	std::thread renderThread{ [&]() 
-		{
-			while (isLooping)
-			{
-				pRenderer->UpdateInSyncRender();
+	std::thread renderThread{ [&]()  { 	while (isLooping) pRenderer->Render(); } };
 
-				pRenderer->Render();
-			}
-		} };
+	//---- World Generation ----
+	std::thread worldThread{ [&]() { 	while (isLooping) pRenderer->UpdateWorld(); } };
 
 	while (isLooping)
 	{
@@ -97,6 +92,7 @@ int main(int argc, char* args[])
 
 	// Wait for the render thread to stop
 	renderThread.join();
+	worldThread.join();
 
 	//Shutdown "framework"
 	delete pRenderer;

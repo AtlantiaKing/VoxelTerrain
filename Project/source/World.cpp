@@ -38,8 +38,9 @@ void dae::World::Update(const Vector3& camPosition)
 {
 	const Vector2Int camChunk{ static_cast<int>(camPosition.x / m_MapSize), static_cast<int>(camPosition.z / m_MapSize) };
 
-	constexpr int destroyRange{ 4 };
-	constexpr int createRange{ 3 };
+	constexpr int destroyRange{ 5 };
+	constexpr int createRange{ 4 };
+	constexpr int renderRange{ 3 };
 
 	for (int x{ -destroyRange }; x <= destroyRange; ++x)
 	{
@@ -50,9 +51,21 @@ void dae::World::Update(const Vector3& camPosition)
 				const Vector2Int chunkPos{ camChunk + Vector2Int{ x,z } };
 
 				auto it = m_Chunks.find(chunkPos);
-				if (it != m_Chunks.end()) continue;
-
-				LoadChunk(chunkPos.x, chunkPos.y);
+				if (it != m_Chunks.end())
+				{
+					if (abs(x) <= renderRange && abs(z) <= renderRange)
+					{
+						it->second->canRender = true;
+					}
+					else
+					{
+						it->second->canRender = false;
+					}
+				}
+				else
+				{
+					LoadChunk(chunkPos.x, chunkPos.y);
+				}
 			}
 			else
 			{
@@ -65,6 +78,14 @@ void dae::World::Update(const Vector3& camPosition)
 			}
 		}
 	}
+
+	for (int x{ -renderRange }; x <= renderRange; ++x)
+	{
+		for (int z{ -renderRange }; z <= renderRange; ++z)
+		{
+			LoadTrees(camChunk.x + x, camChunk.y + z);
+		}
+	}
 }
 
 void dae::World::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewProjection, Face* pFace) const
@@ -72,6 +93,8 @@ void dae::World::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewP
 	for (auto& chunkPair : m_Chunks)
 	{
 		Chunk* chunk{ chunkPair.second };
+
+		if (!chunk->canRender) continue;
 
 		for (int x{}; x < m_MapSize; ++x)
 		{
@@ -124,14 +147,13 @@ void dae::World::LoadChunk(int chunkX, int chunkZ)
 			worldLevel += 0.5f;
 			worldLevel *= m_MapHeight;
 
-			constexpr int seaLevel{ 30 };
-			constexpr int snowLevel{ 43 };
-			constexpr int beachSize{ 2 };
 			bool hasWater{};
+
+			pChunk->heightMap[x + z * m_MapSize] = worldLevel > m_SeaLevel ? worldLevel : m_SeaLevel;
 
 			for (int y{ m_MapHeight }; y >= 0; --y)
 			{
-				if (y > worldLevel && y > seaLevel) continue;
+				if (y > worldLevel && y > m_SeaLevel) continue;
 
 				TextureManager::TextureType textureType{};
 
@@ -148,15 +170,13 @@ void dae::World::LoadChunk(int chunkX, int chunkZ)
 					}
 					else
 					{
-						if (y < seaLevel + beachSize)
+						if (y < m_SeaLevel + m_BeachSize)
 						{
 							textureType = TextureManager::TextureType::SAND;
 						}
 						else
 						{
 							textureType = TextureManager::TextureType::GRASS;
-
-							if (HasTree(Vector2Int{ worldPosX, worldPosZ })) CreateTree(Vector3Int{ worldPosX, y, worldPosZ }, pChunk);
 						}
 					}
 
@@ -167,7 +187,7 @@ void dae::World::LoadChunk(int chunkX, int chunkZ)
 
 					hasWater = true;
 				}
-				else if(y < seaLevel + beachSize)
+				else if(y < m_SeaLevel + m_BeachSize)
 				{
 					textureType = TextureManager::TextureType::SAND;
 				}
@@ -192,8 +212,32 @@ void dae::World::LoadChunk(int chunkX, int chunkZ)
 		}
 	}
 
-
 	m_Chunks[chunkPos] = pChunk;
+}
+
+void dae::World::LoadTrees(int chunkX, int chunkY)
+{
+	Chunk* pChunk{ m_Chunks[Vector2Int{ chunkX, chunkY }] };
+
+	if (pChunk->hasTrees) return;
+
+	pChunk->hasTrees = true;
+
+	for (int x{}; x < m_MapSize; ++x)
+	{
+		for (int z{}; z < m_MapSize; ++z)
+		{
+			if (!HasTree(Vector2Int{ x + chunkX * m_MapSize,  z + chunkY * m_MapSize })) continue;
+
+			const int y{ pChunk->heightMap[x + z * m_MapSize] };
+
+			if (y <= m_SeaLevel + m_BeachSize) continue;
+
+			CreateTree(Vector3Int{ x + chunkX * m_MapSize, y + 1, z + chunkY * m_MapSize }, pChunk);
+
+			break;
+		}
+	}
 }
 
 bool dae::World::HasTree(const Vector2Int& position)
@@ -223,44 +267,47 @@ void dae::World::CreateTree(const Vector3Int& position, Chunk* pChunk)
 	for (int i{}; i < 5; ++i)
 	{
 		if (blockInChunkPos.y + i < m_MapHeight)
-			pChunk->pBlocks[blockInChunkPos.x + blockInChunkPos.z * m_MapSize + (blockInChunkPos.y + i) * m_MapSize * m_MapSize] = new Block{ { position.x, position.y + i, position.z }, woodTexture };
+			AddBlock(position.x, position.y + i, position.z, new Block{ { position.x, position.y + i, position.z }, woodTexture });
 	}
 
-	for (int x{ blockInChunkPos.x - 2 }; x <= blockInChunkPos.x + 2; ++x)
+	for (int x{ -2 }; x <= 2; ++x)
 	{
-		if (x < 0 || x > m_MapSize - 1) continue;
-
-		for (int z{ blockInChunkPos.z - 2 }; z <= blockInChunkPos.z + 2; ++z)
+		for (int z{ -2 }; z <= 2; ++z)
 		{
-			if (z < 0 || z > m_MapSize - 1) continue;
-
-			if (blockInChunkPos.y + 3 < m_MapHeight)
-			if (!pChunk->pBlocks[x + z * m_MapSize + (blockInChunkPos.y + 3) * m_MapSize * m_MapSize])
-				pChunk->pBlocks[x + z * m_MapSize + (blockInChunkPos.y + 3) * m_MapSize * m_MapSize] = new Block{ { x + chunkPos.x * m_MapSize, position.y + 3, z + chunkPos.y * m_MapSize }, leavesTexture };
-
-			if (blockInChunkPos.y + 4 < m_MapHeight)
-			if (!pChunk->pBlocks[x + z * m_MapSize + (blockInChunkPos.y + 4) * m_MapSize * m_MapSize])
-				pChunk->pBlocks[x + z * m_MapSize + (blockInChunkPos.y + 4) * m_MapSize * m_MapSize] = new Block{ { x + chunkPos.x * m_MapSize, position.y + 4, z + chunkPos.y * m_MapSize }, leavesTexture };
+			if (position.y + 3 < m_MapHeight)
+				AddBlock(position.x + x, position.y + 3, position.z + z, new Block{ { position.x + x, position.y + 3, position.z + z }, leavesTexture });
+		
+			if (position.y + 4 < m_MapHeight)
+				AddBlock(position.x + x, position.y + 4, position.z + z, new Block{ { position.x + x, position.y + 4, position.z + z }, leavesTexture });
 		}
 	}
 
-	for (int x{ blockInChunkPos.x - 1 }; x <= blockInChunkPos.x + 1; ++x)
+	for (int x{ -1 }; x <= 1; ++x)
 	{
-		if (x < 0 || x > m_MapSize - 1) continue;
-
-		for (int z{ blockInChunkPos.z - 1 }; z <= blockInChunkPos.z + 1; ++z)
+		for (int z{ -1 }; z <= 1; ++z)
 		{
-			if (z < 0 || z > m_MapSize - 1) continue;
-
 			if(blockInChunkPos.y + 5 < m_MapHeight)
-			if (!pChunk->pBlocks[x + z * m_MapSize + (blockInChunkPos.y + 5) * m_MapSize * m_MapSize])
-				pChunk->pBlocks[x + z * m_MapSize + (blockInChunkPos.y + 5) * m_MapSize * m_MapSize] = new Block{ { x + chunkPos.x * m_MapSize, blockInChunkPos.y + 5, z + chunkPos.y * m_MapSize }, leavesTexture };
+				AddBlock(position.x + x, position.y + 5, position.z + z, new Block{ { position.x + x, position.y + 5, position.z + z }, leavesTexture });
 
-			if (abs(x - blockInChunkPos.x) && abs(z - blockInChunkPos.z)) continue;
+			if (abs(x) && abs(z)) continue;
 
 			if (blockInChunkPos.y + 6 < m_MapHeight)
-			if (!pChunk->pBlocks[x + z * m_MapSize + (blockInChunkPos.y + 6) * m_MapSize * m_MapSize])
-				pChunk->pBlocks[x + z * m_MapSize + (blockInChunkPos.y + 6) * m_MapSize * m_MapSize] = new Block{ { x + chunkPos.x * m_MapSize, blockInChunkPos.y + 6, z + chunkPos.y * m_MapSize }, leavesTexture };
+				AddBlock(position.x + x, position.y + 6, position.z + z, new Block{ { position.x + x, position.y + 6, position.z + z }, leavesTexture });
 		}
 	}
+}
+
+void dae::World::AddBlock(int x, int y, int z, Block* pBlock)
+{
+	const Vector2Int chunkPos{ x / m_MapSize, z / m_MapSize };
+	const Vector3Int positionInChunk{ x - chunkPos.x * m_MapSize, y, z - chunkPos.y * m_MapSize };
+
+	Chunk* pChunk{ m_Chunks[chunkPos] };
+
+	if (!pChunk) return;
+
+	const int blockIdx{ positionInChunk.x + positionInChunk.z * m_MapSize + y * m_MapSize * m_MapSize };
+
+	if (!pChunk->pBlocks[blockIdx])
+		pChunk->pBlocks[blockIdx] = pBlock;
 }
