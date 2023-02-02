@@ -53,7 +53,7 @@ dae::Block::Block(Texture* pSideTexture, Texture* pTopTexture, Texture* pBottomT
 	m_Initialized = true;
 }
 
-void dae::Block::Render(const std::function<bool(const Vector3Int&)>& isBlockPredicate, const Vector3Int& position, const Matrix& viewProjection, Face* pFace) const
+void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, const std::function<bool(const Vector3Int&)>& isBlockPredicate, const Vector3Int& position, const Matrix& viewProjection, Face* pFace) const
 {
 	m_TranslationMatrix[3][0] = static_cast<float>(position.x);
 	m_TranslationMatrix[3][1] = static_cast<float>(position.y);
@@ -89,6 +89,6 @@ void dae::Block::Render(const std::function<bool(const Vector3Int&)>& isBlockPre
 			break;
 		}
 
-		pFace->Render(static_cast<Face::FaceDirection>(i));
+		pFace->Render(pDeviceContext, static_cast<Face::FaceDirection>(i));
 	}
 }

@@ -15,7 +15,7 @@ namespace dae
 		Block(Texture* pSideTexture, Texture* pTopTexture = nullptr, Texture* pBottomTexture = nullptr);
 		~Block() = default;
 
-		void Render(const std::function<bool(const Vector3Int&)>& airPredicate, const Vector3Int& position, const Matrix& viewProjection, Face* pFace) const;
+		void Render(ID3D11DeviceContext* pDeviceContext, const std::function<bool(const Vector3Int&)>& airPredicate, const Vector3Int& position, const Matrix& viewProjection, Face* pFace) const;
 	private:
 		Texture* m_pSideTexture{};
 		Texture* m_pTopTexture{};

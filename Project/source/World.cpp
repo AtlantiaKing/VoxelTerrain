@@ -107,7 +107,7 @@ void dae::World::Render(ID3D11DeviceContext* pDeviceContext, const Matrix& viewP
 						continue;
 					}
 
-					pBlock->Render(m_IsBlockPredicate, position, viewProjection, pFace);
+					pBlock->Render(pDeviceContext, m_IsBlockPredicate, position, viewProjection, pFace);
 				}
 			}
 		}
