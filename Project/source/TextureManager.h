@@ -20,7 +20,8 @@ namespace dae
 			GRASS,
 			SNOW,
 			WOOD,
-			LEAVES
+			LEAVES,
+			SAND
 		};
 
 		~TextureManager();

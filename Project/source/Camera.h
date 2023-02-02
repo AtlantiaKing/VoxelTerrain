@@ -20,6 +20,7 @@ namespace dae
 		void Update(const Timer* pTimer);
 		void ChangeFOV(float newFov);
 
+		Vector3 GetPosition();
 		Matrix& GetViewMatrix() { return m_ViewMatrix; };
 		Matrix& GetInverseViewMatrix() { return m_InvViewMatrix; };
 		Matrix& GetProjectionMatrix() { return m_ProjectionMatrix; };

@@ -13,6 +13,7 @@ namespace dae
 	public:
 		Block() = default;
 		Block(const Vector3Int& position, Texture* pSideTexture, Texture* pTopTexture = nullptr, Texture* pBottomTexture = nullptr);
+		~Block() = default;
 
 		void Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(const Vector3Int&)> airPredicate, const Matrix& viewProjection, Face* pFace) const;
 	private:

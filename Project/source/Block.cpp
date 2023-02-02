@@ -59,8 +59,6 @@ dae::Block::Block(const Vector3Int& position, Texture* pSideTexture, Texture* pT
 
 void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(const Vector3Int&)> isBlockPredicate, const Matrix& viewProjection, Face* pFace) const
 {
-	pFace->SetTexture(m_pSideTexture);
-
 	const Vector3Int position{ m_TranslationMatrix.GetTranslation() };
 
 	Vector4 projectedPosition{ (m_TranslationMatrix * viewProjection).TransformPoint(Vector4{ 0.0f, 0.0f, 0.0f, 1.0f }) };
@@ -73,6 +71,8 @@ void dae::Block::Render(ID3D11DeviceContext* pDeviceContext, std::function<bool(
 	if (projectedPosition.x < -projectionXMargin || projectedPosition.x > projectionXMargin ||
 		projectedPosition.y < -projectionYMargin || projectedPosition.y > projectionYMargin ||
 		projectedPosition.z < 0.0f || projectedPosition.z > 1.0f) return;
+
+	pFace->SetTexture(m_pSideTexture);
 
 	for (int i{}; i <= static_cast<int>(Face::FaceDirection::BOTTOM); ++i)
 	{

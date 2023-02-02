@@ -35,4 +35,9 @@ namespace dae
 	{
 		return { v.x * scale, v.y * scale };
 	}
+
+	inline bool operator==(const Vector2Int& v0, const Vector2Int& v1)
+	{
+		return { v0.x == v1.x && v0.y == v1.y };
+	}
 }

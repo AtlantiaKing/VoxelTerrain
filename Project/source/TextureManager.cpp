@@ -15,6 +15,7 @@ dae::TextureManager::TextureManager(ID3D11Device* pDevice)
 	m_pTextures[TextureType::SNOW].push_back(Texture::LoadFromFile(pDevice, "Resources/Snow.png"));
 	m_pTextures[TextureType::WOOD].push_back(Texture::LoadFromFile(pDevice, "Resources/Wood.png"));
 	m_pTextures[TextureType::LEAVES].push_back(Texture::LoadFromFile(pDevice, "Resources/Leaves.png"));
+	m_pTextures[TextureType::SAND].push_back(Texture::LoadFromFile(pDevice, "Resources/Sand.png"));
 }
 
 dae::TextureManager* dae::TextureManager::GetInstance()

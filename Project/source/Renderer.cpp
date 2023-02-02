@@ -30,7 +30,7 @@ namespace dae {
 
 		// Create and initialize the camera
 		m_pCamera = new Camera{};
-		m_pCamera->Initialize(90.0f, { 32.0f, 45.0f, 32.0f }, static_cast<float>(m_Width) / m_Height);
+		m_pCamera->Initialize(90.0f, { 200.0f, 45.0f, 200.0f }, static_cast<float>(m_Width) / m_Height);
 
 		m_pFace = new Face{ m_pDevice, m_pDeviceContext, "Resources/Block.png" };
 
@@ -68,6 +68,11 @@ namespace dae {
 	{
 		// Update camera movement
 		m_pCamera->Update(pTimer);
+	}
+
+	void Renderer::UpdateInSyncRender()
+	{
+		m_pWorld->Update(m_pCamera->GetPosition());
 	}
 
 	void Renderer::Render() const

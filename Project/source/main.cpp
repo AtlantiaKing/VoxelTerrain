@@ -48,7 +48,15 @@ int main(int argc, char* args[])
 	bool isShowingFPS{ false };
 
 	//--------- Render ---------
-	std::thread renderThread{ [&]() { while (isLooping) pRenderer->Render(); } };
+	std::thread renderThread{ [&]() 
+		{
+			while (isLooping)
+			{
+				pRenderer->UpdateInSyncRender();
+
+				pRenderer->Render();
+			}
+		} };
 
 	while (isLooping)
 	{

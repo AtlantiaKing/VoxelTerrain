@@ -114,4 +114,8 @@ namespace dae
 
 		CalculateProjectionMatrix();
 	}
+	Vector3 Camera::GetPosition()
+	{
+		return m_Origin;
+	}
 }

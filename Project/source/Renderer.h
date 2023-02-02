@@ -23,6 +23,7 @@ namespace dae
 		Renderer& operator=(Renderer&&) noexcept = delete;
 
 		void Update(const Timer* pTimer);
+		void UpdateInSyncRender();
 		void Render() const;
 
 	private:
