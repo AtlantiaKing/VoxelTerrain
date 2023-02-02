@@ -5,6 +5,7 @@
 #include "World.h"
 #include "Vector3Int.h"
 #include "TextureManager.h"
+#include "BlockManager.h"
 
 namespace dae {
 
@@ -32,13 +33,14 @@ namespace dae {
 		m_pCamera = new Camera{};
 		m_pCamera->Initialize(90.0f, { 200.0f, 45.0f, 200.0f }, static_cast<float>(m_Width) / m_Height);
 
-		m_pFace = new Face{ m_pDevice, m_pDeviceContext, "Resources/Block.png" };
+		m_pFace = new Face{ m_pDevice, m_pDeviceContext };
 
 		m_pWorld = new World{};
 	}
 
 	Renderer::~Renderer()
 	{
+		delete BlockManager::GetInstance();
 		delete TextureManager::GetInstance();
 
 		delete m_pWorld;
@@ -70,7 +72,7 @@ namespace dae {
 		m_pCamera->Update(pTimer);
 	}
 
-	void Renderer::UpdateInSyncRender()
+	void Renderer::UpdateWorld()
 	{
 		m_pWorld->Update(m_pCamera->GetPosition());
 	}

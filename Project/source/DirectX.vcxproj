@@ -79,6 +79,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Block.h" />
+    <ClInclude Include="BlockManager.h" />
+    <ClInclude Include="BlockType.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="ColorRGB.h" />
     <ClInclude Include="Face.h" />
@@ -101,6 +103,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Block.cpp" />
+    <ClCompile Include="BlockManager.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Face.cpp" />
     <ClCompile Include="Material.cpp" />

@@ -5,7 +5,7 @@
 
 namespace dae
 {
-	Face::Face(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const std::string& texturePath)
+	Face::Face(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext)
 	{
 		// Create Material
 		m_pMaterial = new Material{ pDevice, L"Resources/PosTex3D.fx" };

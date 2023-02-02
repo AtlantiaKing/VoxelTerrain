@@ -23,7 +23,7 @@ namespace dae
 			Vector2 uv;
 		};
 
-		Face(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext, const std::string& texturePath);
+		Face(ID3D11Device* pDevice, ID3D11DeviceContext* pDeviceContext);
 		~Face();
 
 		void SetTexture(Texture* pTexture);

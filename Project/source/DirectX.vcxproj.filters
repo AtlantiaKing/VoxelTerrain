@@ -62,6 +62,8 @@
     </ClInclude>
     <ClInclude Include="World.h" />
     <ClInclude Include="TextureManager.h" />
+    <ClInclude Include="BlockManager.h" />
+    <ClInclude Include="BlockType.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
@@ -101,5 +103,8 @@
     </ClCompile>
     <ClCompile Include="TextureManager.cpp" />
     <ClCompile Include="World.cpp" />
+    <ClCompile Include="BlockManager.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
